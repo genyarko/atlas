@@ -26,7 +26,7 @@ Assembling ground-truth intelligence requires manually assembling data from 6+ s
 A **single chat interface** that decomposes any enterprise intelligence question into a coordinated research plan, executes specialized modules in parallel, and produces a **Bloomberg-grade brief** with source attribution and confidence scoring.
 
 ```
-Question → Planner → [6 Intelligence Modules] → Synthesizer → Ground Truth Brief
+Question → Planner → [7 Intelligence Modules] → Synthesizer → Ground Truth Brief
               ↓            (Parallel execution)       ↓           ↓
           "What should    • TruePrice          Composite    HTML/PDF
            we know        • Signal              findings     + JSON
@@ -34,13 +34,14 @@ Question → Planner → [6 Intelligence Modules] → Synthesizer → Ground Tru
            Linear?"       • AltData
                           • Visual
                           • Exposure
+                          • Investor
 ```
 
 ---
 
 ## Key Features
 
-### 🔍 Six Intelligence Modules
+### 🔍 Seven Intelligence Modules
 
 | Module | Purpose | Bright Data Tools | Use Case |
 |--------|---------|-------------------|----------|
@@ -50,6 +51,7 @@ Question → Planner → [6 Intelligence Modules] → Synthesizer → Ground Tru
 | **AltData** | Composite sentiment & distress signals | Web Scraper API | Risk assessment |
 | **Visual** | Brand impersonation detection via vision AI | Scraping Browser + Claude Vision | Security monitoring |
 | **Exposure** | Credential & PII leaks across open web | Web Unlocker + SERP API | Incident response |
+| **Investor** | Active VC firms & partners investing in target sectors | SERP API | Investment tracking |
 
 ### 🏗️ Architecture Highlights
 
@@ -282,6 +284,7 @@ atlas/
 │   │   │   ├── altdata.py            # Sentiment composite
 │   │   │   ├── visual.py             # Impersonation detection
 │   │   │   ├── exposure.py           # Credential exposure
+│   │   │   ├── investor.py           # VC firm discovery
 │   │   │   └── _fixtures.py          # Shared mock data
 │   │   │
 │   │   ├── brightdata/               # Bright Data MCP client
@@ -446,6 +449,7 @@ Atlas uses **MCP as the agent's exclusive tool layer**. The agent does NOT call 
 | AltData | Web Scraper API | Glassdoor, G2, Trustpilot sentiment |
 | Visual | Scraping Browser + SERP API | Screenshot capture + domain discovery |
 | Exposure | Web Unlocker + SERP API | Paste sites + search-based discovery |
+| Investor | SERP API | VC firm discovery + sector analysis |
 
 ---
 
@@ -454,7 +458,7 @@ Atlas uses **MCP as the agent's exclusive tool layer**. The agent does NOT call 
 ### ✅ Foundation (Current)
 
 - Full LangGraph orchestration with state machine
-- All 6 modules with fixture-based execution
+- All 7 modules with fixture-based execution
 - End-to-end pipeline: Planner → Executor → Synthesizer → HTML renderer
 - MCP client wrapper with transcript capture
 - Next.js chat UI with live transcript rail
