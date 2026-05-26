@@ -1,0 +1,89 @@
+<!doctype html>
+<!--
+  Atlas demo asset — legitimate AcmeCorp brand reference.
+
+  This is the "ground truth" page the Visual module compares suspects
+  against. Brand tokens (color, logo wordmark, CTA copy) are the source
+  of truth; the lookalike files in this directory intentionally drift
+  from these tokens so the vision-diff has concrete anomalies to surface.
+
+  Public URL (demo hosting): https://acmecorp-demo.test/login
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AcmeCorp — Sign in</title>
+  <style>
+    :root {
+      --brand: #1A2B45;
+      --brand-accent: #FFB347;
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --rule: #e5e7eb;
+      --font: "Inter", -apple-system, "Segoe UI", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--font); }
+    .top { background: var(--brand); color: white; padding: 14px 32px; display: flex; align-items: center; gap: 16px; }
+    .logo { font-weight: 700; letter-spacing: -0.02em; font-size: 20px; }
+    .logo span { color: var(--brand-accent); }
+    .top nav a { color: rgba(255,255,255,0.85); text-decoration: none; margin-left: 24px; font-size: 14px; }
+    main { display: flex; justify-content: center; padding: 64px 24px; }
+    .card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 40px 36px; width: 100%; max-width: 420px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); }
+    .card h1 { margin: 0 0 8px; font-size: 22px; font-weight: 600; }
+    .card p.sub { margin: 0 0 24px; color: var(--muted); font-size: 14px; }
+    label { display: block; font-size: 13px; color: #374151; margin: 12px 0 6px; }
+    input[type="email"], input[type="password"] {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--rule);
+      border-radius: 6px; font-size: 14px;
+    }
+    button.primary {
+      width: 100%; margin-top: 20px; padding: 12px 14px; border: none;
+      background: var(--brand); color: white; font-size: 15px; font-weight: 600;
+      border-radius: 6px; cursor: pointer;
+    }
+    .legal { margin-top: 24px; font-size: 12px; color: var(--muted); text-align: center; }
+    .legal a { color: var(--brand); text-decoration: none; }
+    footer { padding: 32px 24px; text-align: center; color: var(--muted); font-size: 12px; }
+    footer a { color: var(--muted); text-decoration: none; margin: 0 8px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="logo">Acme<span>Corp</span></div>
+    <nav>
+      <a href="/product">Product</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/customers">Customers</a>
+      <a href="/docs">Docs</a>
+    </nav>
+  </header>
+  <main>
+    <section class="card">
+      <h1>Sign in to AcmeCorp</h1>
+      <p class="sub">Welcome back. Sign in to your workspace.</p>
+      <form action="/auth/login" method="post">
+        <label for="email">Work email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+        <button class="primary" type="submit">Sign in to AcmeCorp</button>
+      </form>
+      <p class="legal">
+        By signing in, you agree to AcmeCorp's
+        <a href="/legal/terms">Terms</a> and
+        <a href="/legal/privacy">Privacy Policy</a>.
+      </p>
+    </section>
+  </main>
+  <footer>
+    <a href="https://acmecorp-demo.test">acmecorp-demo.test</a> ·
+    <a href="/support">Support</a> ·
+    <a href="/status">Status</a> ·
+    © 2026 AcmeCorp, Inc.
+  </footer>
+</body>
+</html>

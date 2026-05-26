@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background: #0b0d12;
+  color: #e7ecf3;
+  font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+
+.severity-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.severity-pill.sev-critical { background: #ff4d61; color: #1a0508; }
+.severity-pill.sev-high     { background: #ff9c4a; color: #1a0d04; }
+.severity-pill.sev-notable  { background: #4dd1ff; color: #03161e; }
+.severity-pill.sev-info     { background: #7d8896; color: #0a0f15; }
+
+/* Shared institutional table styling — used by all module sections in
+   the in-app BriefView so cells, headers, and numeric columns match
+   the printed HTML exactly. */
+.atlas-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 6px 0 10px;
+  font-size: 13px;
+  background: #161a23;
+  border: 1px solid #232938;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.atlas-table th, .atlas-table td {
+  padding: 9px 13px;
+  text-align: left;
+  border-bottom: 1px solid #1b2030;
+  vertical-align: top;
+}
+.atlas-table th {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #8a94a4;
+  background: #11141b;
+  border-bottom: 1px solid #232938;
+  font-weight: 600;
+}
+.atlas-table tr:last-child td { border-bottom: 0; }
+.atlas-table .num {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  text-align: right;
+  white-space: nowrap;
+}
+.atlas-table tr.baseline td { color: #8a94a4; }
+.atlas-table a { color: #4dd1ff; text-decoration: none; }
+.atlas-table a:hover { text-decoration: underline; }

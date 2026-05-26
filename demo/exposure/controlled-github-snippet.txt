@@ -1,0 +1,17 @@
+# controlled github code-search hit — file `tests/fixtures/seed.env`
+# claimed origin: github.com/acmecorp-demo/internal-tools — search-result excerpt
+# (controlled demo material — the repo and credentials are synthetic)
+
+# Atlas Exposure module surfaces this snippet as a secondary leak so the
+# brief shows the multi-channel detection (paste sites + public code).
+
+# tests/fixtures/seed.env
+ACME_TEST_USER=qa-bootstrap@acmecorp-demo.test
+ACME_TEST_PASSWORD=qa-bootstrap-Spring2026!
+ACME_TEST_API_KEY=acmecorp_pat_test_8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e
+
+# NOTE for human reviewer:
+#   This is a controlled demo fixture. The credential strings are
+#   shaped to look like real ones (PAT prefix + 32-hex-char body)
+#   so the regex extractors in exposure_data.py have something
+#   structurally realistic to flag, but the values are not live.

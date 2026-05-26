@@ -1,0 +1,846 @@
+﻿{% import "_brief_macros.html" as m %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Atlas â€” Ground Truth Brief: {{ brief.subject }}</title>
+  <style>
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+       ATLAS BRIEF â€” INSTITUTIONAL DESIGN SYSTEM
+       Dual stylesheet: dark UI on screen, ink-on-paper for print/PDF.
+       Both share typography, severity color tokens, and chart shapes.
+       â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    :root {
+      --serif: "Charter", "Georgia", "Iowan Old Style", "Source Serif Pro",
+               "Apple Garamond", "Cambria", "Times New Roman", Times, serif;
+      --sans: -apple-system, "Inter", "Segoe UI", Roboto, "Helvetica Neue",
+              Helvetica, Arial, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+              Consolas, monospace;
+
+      --bg: #0b0d12;
+      --bg-2: #0f1219;
+      --panel: #11141b;
+      --panel-2: #161a23;
+      --ink: #e7ecf3;
+      --ink-2: #c1c9d4;
+      --ink-dim: #8a94a4;
+      --rule: #232938;
+      --rule-soft: #1b2030;
+
+      --accent: #d6b25c;
+      --accent-2: #f0d28a;
+
+      --sev-crit: #ff4d61;
+      --sev-high: #ff9c4a;
+      --sev-note: #4dd1ff;
+      --sev-info: #7d8896;
+
+      --chart-bar: #4dd1ff;
+      --chart-bar-2: #d6b25c;
+      --chart-grid: #232938;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 14.5px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a { color: var(--sev-note); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .doc {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 56px 48px 80px;
+    }
+
+    /* â”€â”€ Masthead â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .masthead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: 28px;
+    }
+    .masthead .brand {
+      display: flex; align-items: baseline; gap: 14px;
+    }
+    .masthead .brand-mark {
+      font-family: var(--mono);
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      font-size: 13px;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .masthead .brand-rule {
+      width: 14px; height: 1px; background: var(--accent); display: inline-block;
+    }
+    .masthead .doctype {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-dim);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .masthead .id-chip {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* â”€â”€ Cover block â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .cover { margin-bottom: 32px; }
+    .cover .subject {
+      font-family: var(--serif);
+      font-size: 46px;
+      line-height: 1.05;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      margin: 0 0 10px;
+      color: var(--ink);
+    }
+    .cover .question {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 17px;
+      line-height: 1.45;
+      color: var(--ink-2);
+      margin: 0 0 18px;
+      max-width: 720px;
+      border-left: 2px solid var(--accent);
+      padding: 4px 0 4px 14px;
+    }
+    .cover .question::before { content: "\201C"; margin-right: 2px; }
+    .cover .question::after  { content: "\201D"; margin-left: 2px; }
+
+    .meta-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: var(--panel);
+      overflow: hidden;
+    }
+    .meta-strip .cell {
+      padding: 12px 16px;
+      border-right: 1px solid var(--rule-soft);
+    }
+    .meta-strip .cell:last-child { border-right: 0; }
+    .meta-strip .label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 4px;
+    }
+    .meta-strip .value {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+    .meta-strip .value.confidence-good { color: var(--accent); }
+    .meta-strip .value.mode-live { color: var(--sev-note); }
+    .meta-strip .value.mode-mock { color: var(--ink-dim); }
+
+    /* â”€â”€ Section heading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    h2.section-heading {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 38px 0 14px;
+      padding: 0 0 6px;
+      border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    h2.section-heading .num {
+      font-family: var(--mono);
+      color: var(--ink-dim);
+      font-size: 10px;
+    }
+
+    /* â”€â”€ Executive summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .executive {
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--ink);
+      margin: 0;
+      padding: 20px 22px;
+      background: var(--panel);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+    }
+
+    /* â”€â”€ Key findings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .findings { list-style: none; padding: 0; margin: 0; }
+    .findings li {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 13px 16px;
+      background: var(--panel);
+      border-left: 3px solid var(--rule);
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 8px;
+      page-break-inside: avoid;
+    }
+    .findings li.sev-critical { border-left-color: var(--sev-crit); }
+    .findings li.sev-high     { border-left-color: var(--sev-high); }
+    .findings li.sev-notable  { border-left-color: var(--sev-note); }
+    .findings li.sev-info     { border-left-color: var(--sev-info); }
+
+    .findings li .stmt { font-size: 14.5px; line-height: 1.5; color: var(--ink); }
+
+    .sev-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 9px;
+      border-radius: 3px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .sev-badge.sev-critical { background: var(--sev-crit); color: #1a0508; }
+    .sev-badge.sev-high     { background: var(--sev-high); color: #1a0d04; }
+    .sev-badge.sev-notable  { background: var(--sev-note); color: #03161e; }
+    .sev-badge.sev-info     { background: var(--sev-info); color: #0a0f15; }
+    .sev-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      vertical-align: middle; margin-right: 8px;
+    }
+    .sev-dot.sev-critical { background: var(--sev-crit); }
+    .sev-dot.sev-high     { background: var(--sev-high); }
+    .sev-dot.sev-notable  { background: var(--sev-note); }
+    .sev-dot.sev-info     { background: var(--sev-info); }
+
+    /* â”€â”€ Module sections â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .module {
+      background: var(--panel);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 22px 24px;
+      margin-bottom: 18px;
+      page-break-inside: avoid;
+    }
+    .module-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .module-head .title-block .name {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+    }
+    .module-head .title-block .track {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-left: 10px;
+      padding: 2px 7px;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      vertical-align: 4px;
+    }
+    .module-head .conf {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-dim);
+      letter-spacing: 0.06em;
+    }
+    .module-head .conf strong { color: var(--ink); font-weight: 600; }
+    .module .purpose {
+      font-family: var(--sans);
+      font-size: 12.5px;
+      color: var(--ink-dim);
+      margin: 2px 0 14px;
+      font-style: italic;
+    }
+    .module .summary {
+      font-size: 15px; line-height: 1.55;
+      color: var(--ink);
+      margin: 0 0 16px;
+    }
+
+    .module h4.sub {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin: 18px 0 8px;
+    }
+
+    /* â”€â”€ Tables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    table.atlas-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0 10px;
+      font-size: 13px;
+      background: var(--panel-2);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    table.atlas-table th, table.atlas-table td {
+      padding: 9px 13px;
+      text-align: left;
+      border-bottom: 1px solid var(--rule-soft);
+      vertical-align: top;
+    }
+    table.atlas-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      background: var(--panel);
+      border-bottom: 1px solid var(--rule);
+      font-weight: 600;
+    }
+    table.atlas-table tr:last-child td { border-bottom: 0; }
+    table.atlas-table .num {
+      font-family: var(--mono);
+      text-align: right;
+      white-space: nowrap;
+    }
+    table.atlas-table .baseline td { color: var(--ink-dim); }
+    table.atlas-table .delta-up { color: var(--sev-high); font-weight: 700; }
+    table.atlas-table .delta-down { color: var(--sev-note); font-weight: 700; }
+    table.atlas-table .delta-zero { color: var(--ink-dim); }
+    table.atlas-table .url-cell {
+      font-family: var(--mono); font-size: 11.5px; word-break: break-word;
+    }
+    table.atlas-table .verdict {
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 0.13em; text-transform: uppercase; font-weight: 700;
+    }
+    table.atlas-table .verdict.critical { color: var(--sev-crit); }
+    table.atlas-table .verdict.high     { color: var(--sev-high); }
+    table.atlas-table .verdict.notable  { color: var(--sev-note); }
+    table.atlas-table .verdict.low      { color: var(--ink-dim); }
+
+    .caption {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin: 0 0 12px;
+    }
+
+    /* â”€â”€ Chart styling (inline SVG) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .chart {
+      background: var(--panel-2);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin: 6px 0 12px;
+    }
+    .chart .chart-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 8px;
+    }
+    .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .chart .bar-label, .chart .axis-label {
+      font-family: var(--mono); font-size: 9.5px; fill: var(--ink-dim);
+      letter-spacing: 0.06em;
+    }
+    .chart .bar-value { font-family: var(--mono); font-size: 10px; fill: var(--ink); }
+
+    /* â”€â”€ Composite score callout (AltData) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .composite {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 18px;
+      align-items: center;
+      padding: 14px 16px;
+      background: var(--panel-2);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      margin: 6px 0 14px;
+    }
+    .composite .score-block {
+      text-align: center;
+      padding: 8px 0;
+      border-right: 1px solid var(--rule-soft);
+    }
+    .composite .score {
+      font-family: var(--serif);
+      font-size: 38px;
+      font-weight: 600;
+      line-height: 1; letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .composite .label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .composite .label.momentum  { color: var(--sev-note); }
+    .composite .label.distress  { color: var(--sev-high); }
+    .composite .label.neutral   { color: var(--ink-dim); }
+    .composite .drivers { margin: 0; padding: 0 0 0 18px; font-size: 13px; }
+    .composite .drivers li { color: var(--ink-2); margin-bottom: 2px; }
+
+    /* â”€â”€ Filing changes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .filing-changes { display: flex; flex-direction: column; gap: 10px; }
+    .filing-change {
+      padding: 12px 14px;
+      background: var(--panel-2);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--rule);
+      border-radius: 0 6px 6px 0;
+      page-break-inside: avoid;
+    }
+    .filing-change.mat-5 { border-left-color: var(--sev-crit); }
+    .filing-change.mat-4 { border-left-color: var(--sev-high); }
+    .filing-change.mat-3 { border-left-color: var(--sev-note); }
+    .filing-change.mat-2 { border-left-color: var(--sev-info); }
+    .filing-change .head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 4px;
+    }
+    .filing-change .kind {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink-dim);
+    }
+    .filing-change .headline {
+      font-family: var(--serif); font-size: 16px; font-weight: 600;
+      margin: 4px 0;
+    }
+    .filing-change .excerpt {
+      font-family: var(--serif); font-size: 13.5px; color: var(--ink-2);
+      font-style: italic; padding-left: 10px;
+      border-left: 2px solid var(--rule-soft);
+      margin: 6px 0 4px;
+    }
+    .filing-change .rationale {
+      font-family: var(--sans); font-size: 12.5px; color: var(--ink-dim);
+    }
+    .filing-change .materiality {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .mat-5 .materiality { color: var(--sev-crit); }
+    .mat-4 .materiality { color: var(--sev-high); }
+    .mat-3 .materiality { color: var(--sev-note); }
+    .mat-2 .materiality { color: var(--ink-dim); }
+
+    /* â”€â”€ Sources â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .sources {
+      font-size: 12.5px;
+      color: var(--ink-dim);
+      padding-top: 12px;
+      border-top: 1px solid var(--rule-soft);
+      margin-top: 14px;
+    }
+    .sources .label {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.13em;
+      text-transform: uppercase; color: var(--ink-dim); margin-right: 6px;
+    }
+    .src-tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      color: var(--ink-dim);
+      padding: 1px 6px;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      margin-left: 5px;
+      letter-spacing: 0.06em;
+    }
+
+    /* â”€â”€ Plan trace / colophon â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    .plan-trace {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13.5px;
+      color: var(--ink-2);
+      padding: 14px 18px;
+      background: var(--panel);
+      border-left: 2px solid var(--rule);
+      border-radius: 0 6px 6px 0;
+    }
+    .plan-trace .label {
+      display: block;
+      font-family: var(--mono); font-style: normal;
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ink-dim); margin-bottom: 4px;
+    }
+
+    .colophon {
+      margin-top: 48px;
+      padding-top: 16px;
+      border-top: 1px solid var(--rule);
+      display: flex; justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--ink-dim);
+      letter-spacing: 0.08em;
+    }
+    .colophon .bd { color: var(--accent); letter-spacing: 0.16em; }
+
+    /* â”€â”€ Print stylesheet (WeasyPrint / browser print) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+    @page {
+      size: A4;
+      margin: 16mm 16mm 18mm 16mm;
+      @bottom-center {
+        content: "Atlas â€” Ground Truth Brief Â· page " counter(page) " of " counter(pages);
+        font-family: "JetBrains Mono", "SFMono-Regular", monospace;
+        font-size: 8pt;
+        color: #6b6f78;
+        letter-spacing: 0.1em;
+      }
+    }
+
+    @media print {
+      html, body {
+        background: #fff !important;
+        color: #1a1d24 !important;
+        font-size: 10.5pt;
+        line-height: 1.5;
+      }
+      a { color: #2e5da3 !important; }
+      .doc { max-width: none; margin: 0; padding: 0; }
+
+      .masthead { border-bottom-color: #a8862c; }
+      .masthead .brand-mark { color: #a8862c; }
+      .masthead .brand-rule { background: #a8862c; }
+      .masthead .doctype,
+      .masthead .id-chip { color: #6b6f78; }
+
+      .cover .subject { color: #0c0e13; font-size: 30pt; }
+      .cover .question { color: #2a2e38; border-left-color: #a8862c; }
+
+      .meta-strip {
+        background: #fafaf7; border-color: #d8d4c0;
+      }
+      .meta-strip .cell { border-right-color: #e5e1cc; }
+      .meta-strip .label, .meta-strip .value.mode-mock { color: #6b6f78; }
+      .meta-strip .value { color: #1a1d24; }
+      .meta-strip .value.confidence-good { color: #a8862c; }
+      .meta-strip .value.mode-live { color: #2e5da3; }
+
+      h2.section-heading {
+        color: #a8862c; border-bottom-color: #d8d4c0;
+      }
+      h2.section-heading .num { color: #6b6f78; }
+
+      .executive {
+        background: #fafaf7; color: #1a1d24;
+        border-left-color: #a8862c;
+      }
+
+      .findings li {
+        background: #fafaf7;
+        border-left-color: #d8d4c0;
+        page-break-inside: avoid;
+      }
+      .findings li .stmt { color: #1a1d24; }
+      .findings li.sev-critical { border-left-color: #c91022; }
+      .findings li.sev-high     { border-left-color: #d97014; }
+      .findings li.sev-notable  { border-left-color: #1f6b8a; }
+      .findings li.sev-info     { border-left-color: #4a5161; }
+
+      .sev-badge.sev-critical { background: #c91022; color: #fff; }
+      .sev-badge.sev-high     { background: #d97014; color: #fff; }
+      .sev-badge.sev-notable  { background: #1f6b8a; color: #fff; }
+      .sev-badge.sev-info     { background: #4a5161; color: #fff; }
+      .sev-dot.sev-critical { background: #c91022; }
+      .sev-dot.sev-high     { background: #d97014; }
+      .sev-dot.sev-notable  { background: #1f6b8a; }
+      .sev-dot.sev-info     { background: #4a5161; }
+
+      .module {
+        background: #fff; border-color: #d8d4c0;
+        box-shadow: none;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .module-head .title-block .name { color: #0c0e13; }
+      .module-head .title-block .track { color: #a8862c; border-color: #a8862c; }
+      .module-head .conf, .module-head .conf strong { color: #4a5161; }
+      .module .purpose, .module h4.sub { color: #6b6f78; }
+      .module .summary { color: #1a1d24; }
+
+      table.atlas-table {
+        background: #fff; border-color: #d8d4c0;
+      }
+      table.atlas-table th {
+        background: #fafaf7; color: #4a5161;
+        border-bottom-color: #d8d4c0;
+      }
+      table.atlas-table th, table.atlas-table td {
+        border-bottom-color: #e5e1cc;
+      }
+      table.atlas-table .baseline td { color: #6b6f78; }
+      table.atlas-table .delta-up { color: #d97014; }
+      table.atlas-table .delta-down { color: #1f6b8a; }
+      table.atlas-table .delta-zero { color: #6b6f78; }
+      table.atlas-table .verdict.critical { color: #c91022; }
+      table.atlas-table .verdict.high     { color: #d97014; }
+      table.atlas-table .verdict.notable  { color: #1f6b8a; }
+      table.atlas-table .verdict.low      { color: #6b6f78; }
+
+      .chart {
+        background: #fafaf7; border-color: #d8d4c0;
+      }
+      .chart .chart-title, .chart .bar-label, .chart .axis-label { fill: #4a5161; color: #4a5161; }
+      .chart .bar-value { fill: #1a1d24; }
+      .chart svg rect.print-bar { fill: #2e5da3; }
+      .chart svg rect.print-bar-2 { fill: #a8862c; }
+      .chart svg line.print-grid { stroke: #d8d4c0; }
+      .chart svg path.print-trend { stroke: #2e5da3; }
+      .chart svg circle.print-dot { fill: #2e5da3; }
+      .chart svg text { fill: #4a5161; }
+
+      .composite {
+        background: #fafaf7; border-color: #d8d4c0;
+      }
+      .composite .score-block { border-right-color: #e5e1cc; }
+      .composite .score { color: #0c0e13; }
+      .composite .label.momentum { color: #1f6b8a; }
+      .composite .label.distress { color: #c91022; }
+      .composite .label.neutral { color: #6b6f78; }
+      .composite .drivers li { color: #1a1d24; }
+
+      .filing-change {
+        background: #fafaf7; border-color: #d8d4c0;
+      }
+      .filing-change .headline { color: #0c0e13; }
+      .filing-change .excerpt { color: #2a2e38; border-left-color: #d8d4c0; }
+      .filing-change .rationale { color: #4a5161; }
+      .filing-change.mat-5 { border-left-color: #c91022; }
+      .filing-change.mat-4 { border-left-color: #d97014; }
+      .filing-change.mat-3 { border-left-color: #1f6b8a; }
+      .filing-change.mat-2 { border-left-color: #6b6f78; }
+      .mat-5 .materiality { color: #c91022; }
+      .mat-4 .materiality { color: #d97014; }
+      .mat-3 .materiality { color: #1f6b8a; }
+      .mat-2 .materiality { color: #6b6f78; }
+      .filing-change .kind { color: #6b6f78; }
+
+      .sources, .sources .label, .src-tag, .caption { color: #6b6f78; }
+      .src-tag { border-color: #d8d4c0; }
+
+      .plan-trace {
+        background: #fafaf7; color: #2a2e38; border-left-color: #d8d4c0;
+      }
+      .plan-trace .label { color: #6b6f78; }
+      .colophon { color: #6b6f78; border-top-color: #d8d4c0; }
+      .colophon .bd { color: #a8862c; }
+
+      .module, .filing-change, .findings li, .chart { break-inside: avoid; }
+      h2.section-heading { break-after: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+
+    {# â”€â”€ Masthead â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+    <header class="masthead">
+      <div class="brand">
+        <span class="brand-mark">Atlas</span>
+        <span class="brand-rule"></span>
+        <span class="doctype">Ground Truth Brief</span>
+      </div>
+      <span class="id-chip">id Â· {{ brief.id }}</span>
+    </header>
+
+    {# â”€â”€ Cover â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+    <section class="cover">
+      <h1 class="subject">{{ brief.subject }}</h1>
+      <p class="question">{{ brief.question.text }}</p>
+
+      <div class="meta-strip">
+        <div class="cell">
+          <div class="label">Generated</div>
+          <div class="value">{{ brief.generated_at.strftime('%Y-%m-%d %H:%M UTC') }}</div>
+        </div>
+        <div class="cell">
+          <div class="label">Subject</div>
+          <div class="value">{{ brief.subject }}</div>
+        </div>
+        <div class="cell">
+          <div class="label">Intent</div>
+          <div class="value">{{ brief.plan.intent|upper }}</div>
+        </div>
+        <div class="cell">
+          <div class="label">Confidence</div>
+          <div class="value {% if brief.confidence_score >= 0.75 %}confidence-good{% endif %}">
+            {{ "%.2f"|format(brief.confidence_score) }}
+            <span style="color: var(--ink-dim); margin-left: 6px;">Â· {{ brief.sections|length }} mod</span>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="label">Mode</div>
+          <div class="value mode-{{ brief.mode }}">{{ brief.mode|upper }}</div>
+        </div>
+      </div>
+    </section>
+
+    {# â”€â”€ Executive summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+    <h2 class="section-heading">
+      <span>Executive Summary</span>
+      <span class="num">Â§ 01</span>
+    </h2>
+    <p class="executive">{{ brief.executive_summary }}</p>
+
+    {# â”€â”€ Key Findings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+    {% if brief.key_findings %}
+    <h2 class="section-heading">
+      <span>Key Findings</span>
+      <span class="num">Â§ 02 Â· top {{ brief.key_findings|length }}</span>
+    </h2>
+    <ul class="findings">
+      {% for f in brief.key_findings %}
+      <li class="sev-{{ f.severity }}">
+        <span class="sev-badge sev-{{ f.severity }}">{{ f.severity }}</span>
+        <span class="stmt">{{ f.statement }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {# â”€â”€ Module sections â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+    <h2 class="section-heading">
+      <span>Module Detail</span>
+      <span class="num">Â§ 03 Â· {{ brief.sections|length }} module{{ '' if brief.sections|length == 1 else 's' }}</span>
+    </h2>
+
+    {% for section in brief.sections %}
+      {% set meta = catalog[section.module] %}
+      <div class="module">
+        <div class="module-head">
+          <div class="title-block">
+            <span class="name">{{ section.title }}</span>
+            <span class="track">{{ meta.track }}</span>
+          </div>
+          <div class="conf">
+            confidence <strong>{{ "%.2f"|format(section.confidence) }}</strong>
+            Â· via {{ meta.bright_data_tools|join(' + ') }}
+          </div>
+        </div>
+        <div class="purpose">{{ meta.purpose }}</div>
+        <p class="summary">{{ section.summary }}</p>
+
+        {# â”€â”€ TruePrice â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+        {% if section.module == 'trueprice' and section.data.regions %}
+          {{ m.render_price_table(section.data) }}
+          {% if specs.trueprice and specs.trueprice.delta_bars.bars %}
+            {{ m.render_price_chart(specs.trueprice.delta_bars) }}
+          {% endif %}
+        {% endif %}
+
+        {# â”€â”€ Signal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+        {% if section.module == 'signal' and section.data.by_region %}
+          {{ m.render_signal_section(section.data, specs.signal or {}) }}
+        {% endif %}
+
+        {# â”€â”€ AltData â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+        {% if section.module == 'altdata' and section.data.composite_score is defined %}
+          {{ m.render_altdata(section.data, specs.altdata or {}) }}
+        {% endif %}
+
+        {# â”€â”€ Filing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+        {% if section.module == 'filing' and section.data.filing_diff %}
+          {{ m.render_filing_changes(section.data) }}
+        {% endif %}
+
+        {# â”€â”€ Visual â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+        {% if section.module == 'visual' and section.data.suspects %}
+          {{ m.render_visual_table(section.data) }}
+        {% endif %}
+
+        {# â”€â”€ Exposure â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+        {% if section.module == 'exposure' and section.data.exposure_scan %}
+          {{ m.render_exposure(section.data) }}
+        {% endif %}
+
+        {# â”€â”€ Section findings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+        {% if section.findings %}
+        <h4 class="sub">Findings ({{ section.findings|length }})</h4>
+        <ul class="findings">
+          {% for f in section.findings %}
+          <li class="sev-{{ f.severity }}">
+            <span class="sev-badge sev-{{ f.severity }}">{{ f.severity }}</span>
+            <span class="stmt">{{ f.statement }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {# â”€â”€ Sources â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+        {% if section.sources %}
+        <div class="sources">
+          <span class="label">Sources ({{ section.sources|length }})</span>
+          {% for s in section.sources %}
+          <a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.title }}</a><span class="src-tag">{{ s.via }}</span>{% if not loop.last %} Â·{% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    {# â”€â”€ Plan trace â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+    <h2 class="section-heading">
+      <span>Plan Trace</span>
+      <span class="num">Â§ 04</span>
+    </h2>
+    <div class="plan-trace">
+      <span class="label">Planner reasoning</span>
+      {{ brief.plan.reasoning }}
+    </div>
+
+    {# â”€â”€ Colophon â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
+    <footer class="colophon">
+      <span>Atlas Â· Ground Truth Brief Â· <span class="bd">powered by Bright Data MCP</span></span>
+      <span>{{ brief.generated_at.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+    </footer>
+  </div>
+</body>
+</html>

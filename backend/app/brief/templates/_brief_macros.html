@@ -1,0 +1,333 @@
+{# ─────────────────────────────────────────────────────────────────
+   Atlas brief — module-specific Jinja macros.
+   Imported by brief.html via {% import "_brief_macros.html" as m %}.
+   ───────────────────────────────────────────────────────────────── #}
+
+{% macro render_price_table(data) %}
+<h4 class="sub">Comparative true pricing</h4>
+<table class="atlas-table">
+  <thead>
+    <tr>
+      <th>Region</th>
+      <th>Plan</th>
+      <th class="num">Sticker (local)</th>
+      <th class="num">True cart (local)</th>
+      <th class="num">True (USD)</th>
+      <th class="num">Δ vs baseline</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in data.regions %}
+    <tr class="{% if row.delta_pct == 0 %}baseline{% endif %}">
+      <td><strong>{{ row.region }}</strong> — {{ row.region_name }}</td>
+      <td>{{ row.plan }}</td>
+      <td class="num">{{ "%.2f"|format(row.sticker_local) }} {{ row.currency }}</td>
+      <td class="num">{{ "%.2f"|format(row.true_local) }} {{ row.currency }}</td>
+      <td class="num">${{ "%.2f"|format(row.true_usd) }}</td>
+      <td class="num {% if row.delta_pct > 0 %}delta-up{% elif row.delta_pct < 0 %}delta-down{% else %}delta-zero{% endif %}">
+        {% if row.delta_pct == 0 %}baseline{% else %}{{ "%+.1f"|format(row.delta_pct) }}%{% endif %}
+      </td>
+      <td>{{ row.notes }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="caption">
+  FX snapshot {{ data.fx_snapshot_date }} · mode {{ data.mode }}{% if data.failed_regions %} · failed: {{ data.failed_regions|join(', ') }}{% endif %}
+</p>
+{% endmacro %}
+
+{% macro render_price_chart(spec) %}
+{% set h = spec.bars|length * spec.row_height + 20 %}
+<div class="chart">
+  <div class="chart-title">Δ vs US baseline · per region (% true-cart price)</div>
+  <svg viewBox="0 0 600 {{ h }}" xmlns="http://www.w3.org/2000/svg">
+    <line x1="{{ spec.axis_x }}" y1="6" x2="{{ spec.axis_x }}" y2="{{ h - 12 }}" stroke="var(--rule)" class="print-grid" stroke-width="1" />
+    {% for bar in spec.bars %}
+      {% set y = loop.index0 * spec.row_height + 18 %}
+      <text x="{{ spec.axis_x - 8 }}" y="{{ y + 4 }}" text-anchor="end" class="axis-label">{{ bar.label }}</text>
+      {% if bar.is_baseline %}
+        <rect x="{{ spec.axis_x }}" y="{{ y - 8 }}" width="6" height="16" fill="var(--ink-dim)" class="print-grid" />
+        <text x="{{ spec.axis_x + 14 }}" y="{{ y + 4 }}" class="bar-value">baseline · {{ bar.usd_text }}</text>
+      {% else %}
+        <rect x="{{ spec.axis_x }}" y="{{ y - 8 }}" width="{{ bar.width }}" height="16"
+              fill="{% if bar.polarity == 'up' %}var(--sev-high){% else %}var(--sev-note){% endif %}"
+              class="{% if bar.polarity == 'up' %}print-bar-2{% else %}print-bar{% endif %}" />
+        <text x="{{ spec.axis_x + bar.width + 8 }}" y="{{ y + 4 }}" class="bar-value">{{ bar.value_text }} · {{ bar.usd_text }}</text>
+      {% endif %}
+    {% endfor %}
+  </svg>
+</div>
+{% endmacro %}
+
+{% macro render_signal_section(data, sig_specs) %}
+<h4 class="sub">Hiring composition · last {{ data.lookback_days }} days</h4>
+{% set fb = sig_specs.family_bars %}
+{% if fb and fb.bars %}
+{% set h = fb.bars|length * fb.row_height + 16 %}
+<div class="chart">
+  <div class="chart-title">Roles by family · {{ data.total_postings }} total · velocity {{ "%.2f"|format(data.velocity_ratio) }}× baseline</div>
+  <svg viewBox="0 0 600 {{ h }}" xmlns="http://www.w3.org/2000/svg">
+    <line x1="{{ fb.axis_x }}" y1="6" x2="{{ fb.axis_x }}" y2="{{ h - 10 }}" stroke="var(--rule)" class="print-grid" stroke-width="1" />
+    {% for bar in fb.bars %}
+      {% set y = loop.index0 * fb.row_height + 18 %}
+      <text x="{{ fb.axis_x - 8 }}" y="{{ y + 4 }}" text-anchor="end" class="axis-label">{{ bar.label }}</text>
+      <rect x="{{ fb.axis_x }}" y="{{ y - 7 }}" width="{{ bar.width }}" height="14" fill="var(--chart-bar)" class="print-bar" />
+      <text x="{{ fb.axis_x + bar.width + 8 }}" y="{{ y + 4 }}" class="bar-value">{{ bar.value }}</text>
+    {% endfor %}
+  </svg>
+</div>
+{% endif %}
+
+{% set rb = sig_specs.region_bars %}
+{% if rb and rb.rows %}
+<h4 class="sub">Geographic shift · recent 30d vs prior 30-60d</h4>
+{% set h2 = rb.rows|length * rb.row_height + 24 %}
+<div class="chart">
+  <div class="chart-title">Postings by region · current vs prior window</div>
+  <svg viewBox="0 0 600 {{ h2 }}" xmlns="http://www.w3.org/2000/svg">
+    <line x1="{{ rb.axis_x }}" y1="6" x2="{{ rb.axis_x }}" y2="{{ h2 - 14 }}" stroke="var(--rule)" class="print-grid" stroke-width="1" />
+    {% for row in rb.rows %}
+      {% set y = loop.index0 * rb.row_height + 18 %}
+      <text x="{{ rb.axis_x - 6 }}" y="{{ y + 4 }}" text-anchor="end" class="axis-label">{{ row.label }}</text>
+      <rect x="{{ rb.axis_x }}" y="{{ y - 12 }}" width="{{ row.recent_width }}" height="10" fill="var(--chart-bar)" class="print-bar" />
+      <text x="{{ rb.axis_x + row.recent_width + 6 }}" y="{{ y - 4 }}" class="bar-value">{{ row.recent }} <tspan class="axis-label">recent</tspan></text>
+      <rect x="{{ rb.axis_x }}" y="{{ y + 2 }}" width="{{ row.older_width }}" height="10" fill="var(--chart-bar-2)" class="print-bar-2" opacity="0.85" />
+      <text x="{{ rb.axis_x + row.older_width + 6 }}" y="{{ y + 10 }}" class="bar-value">{{ row.older }} <tspan class="axis-label">prior</tspan></text>
+    {% endfor %}
+  </svg>
+</div>
+{% endif %}
+
+{% if data.top_examples %}
+<h4 class="sub">Representative postings</h4>
+<table class="atlas-table">
+  <thead>
+    <tr>
+      <th>Role</th>
+      <th>Family</th>
+      <th>Location</th>
+      <th>Region</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ex in data.top_examples[:5] %}
+    <tr>
+      <td><a href="{{ ex.url }}" target="_blank" rel="noopener">{{ ex.title }}</a></td>
+      <td><span class="sev-badge sev-info">{{ ex.family }}</span></td>
+      <td>{{ ex.location }}</td>
+      <td>{{ ex.region }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endmacro %}
+
+{% macro render_altdata(data, alt_specs) %}
+{% set label = data.composite_label %}
+<div class="composite">
+  <div class="score-block">
+    <div class="score">{{ "%.2f"|format(data.composite_score) }}</div>
+    <div class="label {{ label }}">{{ label }}</div>
+  </div>
+  <div>
+    <div class="caption" style="margin-bottom:6px;">Composite alt-data drivers</div>
+    <ul class="drivers">
+      {% for d in data.drivers[:5] %}
+      <li>{{ d }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{% if alt_specs and alt_specs.meter %}
+{% set mt = alt_specs.meter %}
+<div class="chart" style="padding: 10px 16px 6px;">
+  <div class="chart-title">Composite gauge · 0.45 distress · 0.55 momentum</div>
+  <svg viewBox="0 0 600 52" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="20" width="540" height="12" fill="var(--panel)" stroke="var(--rule)" class="print-grid" />
+    <rect x="20" y="20" width="{{ mt.distress_end - 20 }}" height="12" fill="var(--sev-high)" opacity="0.35" class="print-bar-2" />
+    <rect x="{{ mt.momentum_start }}" y="20" width="{{ 560 - mt.momentum_start }}" height="12" fill="var(--sev-note)" opacity="0.35" class="print-bar" />
+    <line x1="{{ mt.distress_end }}" y1="14" x2="{{ mt.distress_end }}" y2="38" stroke="var(--ink-dim)" class="print-grid" stroke-width="1" />
+    <line x1="{{ mt.momentum_start }}" y1="14" x2="{{ mt.momentum_start }}" y2="38" stroke="var(--ink-dim)" class="print-grid" stroke-width="1" />
+    <polygon points="{{ mt.marker_x }},10 {{ mt.marker_x - 6 }},20 {{ mt.marker_x + 6 }},20" fill="var(--accent)" class="print-bar-2" />
+    <rect x="{{ mt.marker_x - 1 }}" y="14" width="2" height="20" fill="var(--accent)" class="print-bar-2" />
+    <text x="20" y="48" class="axis-label">0.00</text>
+    <text x="{{ mt.distress_end - 12 }}" y="48" class="axis-label">0.45</text>
+    <text x="{{ mt.momentum_start - 12 }}" y="48" class="axis-label">0.55</text>
+    <text x="540" y="48" class="axis-label" text-anchor="end">1.00</text>
+    <text x="{{ mt.marker_x }}" y="48" class="bar-value" text-anchor="middle">{{ "%.2f"|format(data.composite_score) }}</text>
+  </svg>
+</div>
+{% endif %}
+
+{% if data.sources %}
+<h4 class="sub">Per-source trend</h4>
+<table class="atlas-table">
+  <thead>
+    <tr>
+      <th>Source</th>
+      <th class="num">Recent / Prior</th>
+      <th class="num">Rating recent → prior</th>
+      <th class="num">Δ rating</th>
+      <th class="num">Velocity</th>
+      <th>Top complaint</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for src_name, s in data.sources.items() %}
+    <tr>
+      <td><strong>{{ src_name|capitalize }}</strong></td>
+      <td class="num">{{ s.recent_30d }} / {{ s.prior_30_60d }}</td>
+      <td class="num">{{ "%.2f"|format(s.avg_rating_prior) }} → {{ "%.2f"|format(s.avg_rating_recent) }}</td>
+      <td class="num {% if s.rating_delta > 0 %}delta-down{% elif s.rating_delta < 0 %}delta-up{% else %}delta-zero{% endif %}">
+        {{ "%+.2f"|format(s.rating_delta) }}
+      </td>
+      <td class="num">{{ "%.2f"|format(s.velocity_ratio) }}×</td>
+      <td>{% if s.top_complaint %}<span class="sev-badge sev-notable">{{ s.top_complaint }}</span> ({{ s.complaint_clusters.get(s.top_complaint, 0) }}){% else %}<span style="color: var(--ink-dim);">none clustered</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endmacro %}
+
+{% macro render_filing_changes(data) %}
+{% set diff = data.filing_diff %}
+{% if diff.current %}
+<h4 class="sub">Filing under review</h4>
+<table class="atlas-table">
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Period</th>
+      <th>Filed</th>
+      <th>Accession</th>
+      <th>Prior comp.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>{{ diff.current.filing_type }}</strong></td>
+      <td>{{ diff.current.fiscal_period or '—' }}</td>
+      <td>{{ diff.current.filed_at }}</td>
+      <td><a href="{{ diff.current.url }}" target="_blank" rel="noopener" class="url-cell">{{ diff.current.accession_no }}</a></td>
+      <td>{% if diff.prior %}{{ diff.prior.filing_type }} · {{ diff.prior.filed_at }}{% else %}—{% endif %}</td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
+
+{% if diff.changes %}
+<h4 class="sub">Material changes · materiality 1–5</h4>
+<div class="filing-changes">
+  {% for c in diff.changes %}
+  <div class="filing-change mat-{{ c.materiality }}">
+    <div class="head">
+      <span class="kind">{{ c.kind }} · materiality {{ c.materiality }}/5</span>
+      <span class="materiality">
+        {% if c.materiality >= 5 %}critical
+        {% elif c.materiality == 4 %}high
+        {% elif c.materiality == 3 %}notable
+        {% elif c.materiality == 2 %}low
+        {% else %}info{% endif %}
+      </span>
+    </div>
+    <div class="headline">{{ c.headline }}</div>
+    {% if c.excerpt %}<div class="excerpt">{{ c.excerpt }}</div>{% endif %}
+    {% if c.rationale %}<div class="rationale">{{ c.rationale }}</div>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro render_visual_table(data) %}
+<h4 class="sub">Suspect domains · ranked by verdict</h4>
+<table class="atlas-table">
+  <thead>
+    <tr>
+      <th>Suspect</th>
+      <th>Verdict</th>
+      <th class="num">Similarity</th>
+      <th class="num">Anomalies</th>
+      <th>Top observation</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in data.suspects %}
+    <tr>
+      <td class="url-cell"><a href="{{ row.suspect_url }}" target="_blank" rel="noopener">{{ row.suspect_url }}</a></td>
+      <td><span class="verdict {{ row.verdict }}">{{ row.verdict }}</span></td>
+      <td class="num">{{ "%.2f"|format(row.similarity) }}</td>
+      <td class="num">{{ row.anomaly_count }}</td>
+      <td>{% if row.anomalies %}{{ row.anomalies[0].description }}{% else %}<span style="color: var(--ink-dim);">none</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if data.suspects %}
+<h4 class="sub">Anomaly detail</h4>
+{% for row in data.suspects %}
+{% if row.anomalies %}
+<div class="filing-change mat-{% if row.verdict == 'critical' %}5{% elif row.verdict == 'high' %}4{% elif row.verdict == 'notable' %}3{% else %}2{% endif %}">
+  <div class="head">
+    <span class="kind">{{ row.verdict }} · sim {{ "%.2f"|format(row.similarity) }} · {{ row.anomaly_count }} anomalies</span>
+  </div>
+  <div class="headline url-cell">{{ row.suspect_url }}</div>
+  <ul style="margin: 6px 0 0 0; padding-left: 16px; font-size: 13px;">
+    {% for a in row.anomalies %}
+    <li><strong style="font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-right: 4px;">{{ a.kind }}</strong> {{ a.description }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+<p class="caption">
+  Rubric: ≥3 anomalies + sim≥0.80 ⇒ HIGH · mode {{ data.mode }}{% if data.dropped %} · dropped {{ data.dropped|length }}{% endif %}
+</p>
+{% endmacro %}
+
+{% macro render_exposure(data) %}
+{% set scan = data.exposure_scan %}
+<h4 class="sub">Exposure tally · {{ scan.record_count }} record{{ '' if scan.record_count == 1 else 's' }} across {{ scan.channels|length }} channel{{ '' if scan.channels|length == 1 else 's' }}</h4>
+
+{% if scan.records %}
+<div class="filing-changes">
+  {% for rec in scan.records %}
+  <div class="filing-change mat-{% if rec.severity == 'critical' %}5{% elif rec.severity == 'high' %}4{% elif rec.severity == 'notable' %}3{% else %}2{% endif %}">
+    <div class="head">
+      <span class="kind">{{ rec.channel }} · {{ rec.kind }}</span>
+      <span class="materiality">{{ rec.severity }}</span>
+    </div>
+    <div class="headline url-cell"><a href="{{ rec.location_url }}" target="_blank" rel="noopener">{{ rec.location_title }}</a></div>
+    {% if rec.excerpt %}<div class="excerpt">{{ rec.excerpt }}</div>{% endif %}
+    {% if rec.rationale %}<div class="rationale">{{ rec.rationale }}</div>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if scan.dorks %}
+<h4 class="sub">SERP dorks executed</h4>
+<table class="atlas-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Query</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for q in scan.dorks %}
+    <tr>
+      <td class="num">{{ loop.index }}</td>
+      <td class="url-cell">{{ q }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endmacro %}

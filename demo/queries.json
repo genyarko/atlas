@@ -1,0 +1,26 @@
+{
+  "$comment": "Locked demo queries. Foundation-mode module stubs key off the 'intent' field and entity keywords.",
+  "queries": [
+    {
+      "id": "demo-gtm-linear",
+      "track": "gtm",
+      "query": "Run a full competitive brief on Linear. I'm evaluating them vs Jira for our 250-person engineering team.",
+      "expected_modules": ["trueprice", "signal", "altdata"],
+      "subject": "Linear"
+    },
+    {
+      "id": "demo-finance-datadog",
+      "track": "finance",
+      "query": "Pre-earnings signal scan on Datadog. Anything material in the last 30 days?",
+      "expected_modules": ["filing", "signal", "altdata"],
+      "subject": "Datadog"
+    },
+    {
+      "id": "demo-security-acmecorp",
+      "track": "security",
+      "query": "Scan for brand exposure on AcmeCorp. Flag impersonation and credential leaks.",
+      "expected_modules": ["visual", "exposure"],
+      "subject": "AcmeCorp"
+    }
+  ]
+}

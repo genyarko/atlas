@@ -1,0 +1,403 @@
+{% import "_brief_macros_pdf.html" as m %}<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Atlas — {{ brief.subject }}</title>
+<style>
+  /* xhtml2pdf compatible CSS — no custom properties, no flexbox.
+     Designed to look like a serious institutional research brief. */
+
+  @page {
+    size: a4;
+    margin: 18mm 16mm 22mm 16mm;
+    @frame footer_frame {
+      -pdf-frame-content: footer_content;
+      left: 16mm; bottom: 8mm; width: 178mm; height: 10mm;
+    }
+  }
+  body { font-family: "Helvetica", Arial, sans-serif; color: #1a1d24;
+         font-size: 10pt; line-height: 1.45; }
+
+  /* ── Masthead ── */
+  .masthead { width: 100%; border-bottom: 2px solid #a8862c; padding-bottom: 6px; }
+  .masthead .brand-mark { font-family: "Courier", monospace; font-size: 11pt;
+                          letter-spacing: 3px; color: #a8862c; font-weight: bold; }
+  .masthead .doctype    { font-family: "Courier", monospace; font-size: 9pt;
+                          letter-spacing: 2px; color: #6b6f78; text-transform: uppercase; }
+  .masthead .id-chip    { font-family: "Courier", monospace; font-size: 8pt;
+                          color: #6b6f78; letter-spacing: 1px; }
+
+  /* ── Cover ── */
+  h1.subject  { font-family: "Times-Roman", serif; font-size: 30pt;
+                font-weight: bold; color: #0c0e13; margin: 14pt 0 4pt; }
+  .question   { font-family: "Times-Italic", serif; font-style: italic;
+                font-size: 12pt; color: #2a2e38; margin: 4pt 0 10pt;
+                padding: 2pt 0 2pt 8pt; border-left: 2pt solid #a8862c; }
+
+  /* ── Meta strip ── */
+  table.meta { width: 100%; border-collapse: collapse; margin: 8pt 0 16pt;
+               background: #fafaf7; border: 1pt solid #d8d4c0; }
+  table.meta td { padding: 6pt 9pt; border-right: 1pt solid #e5e1cc;
+                  vertical-align: top; font-size: 9pt; }
+  table.meta .label { color: #6b6f78; font-family: "Courier", monospace;
+                      font-size: 7.5pt; letter-spacing: 1.5pt;
+                      text-transform: uppercase; }
+  table.meta .value { color: #1a1d24; font-family: "Courier", monospace;
+                      font-size: 10pt; margin-top: 2pt; }
+  table.meta .value-accent { color: #a8862c; }
+  table.meta .value-live   { color: #2e5da3; }
+
+  /* ── Section headings ── */
+  h2.section {
+    font-family: "Courier", monospace; font-size: 9pt;
+    letter-spacing: 3pt; color: #a8862c; text-transform: uppercase;
+    margin: 14pt 0 6pt; padding-bottom: 3pt;
+    border-bottom: 0.75pt solid #d8d4c0;
+  }
+  h4.sub {
+    font-family: "Courier", monospace; font-size: 8.5pt;
+    letter-spacing: 1.5pt; color: #6b6f78; text-transform: uppercase;
+    margin: 10pt 0 5pt;
+  }
+
+  /* ── Executive summary ── */
+  .executive {
+    font-family: "Times-Roman", serif; font-size: 12pt;
+    line-height: 1.45; color: #1a1d24;
+    padding: 10pt 12pt; background: #fafaf7;
+    border-left: 2pt solid #a8862c;
+    margin-bottom: 12pt;
+  }
+
+  /* ── Findings ── */
+  table.findings { width: 100%; border-collapse: collapse; margin: 4pt 0 8pt; }
+  table.findings td.sev-cell { width: 60pt; padding: 6pt 8pt 6pt 8pt;
+                               vertical-align: top; background: #fafaf7; }
+  table.findings td.stmt-cell { padding: 6pt 8pt; vertical-align: top;
+                                background: #fafaf7; }
+  table.findings tr td { border-bottom: 1pt solid #fff; }
+  .sev-critical-bar { border-left: 3pt solid #c91022; }
+  .sev-high-bar     { border-left: 3pt solid #d97014; }
+  .sev-notable-bar  { border-left: 3pt solid #1f6b8a; }
+  .sev-info-bar     { border-left: 3pt solid #4a5161; }
+
+  .badge {
+    font-family: "Courier", monospace; font-size: 7.5pt;
+    font-weight: bold; letter-spacing: 1pt; text-transform: uppercase;
+    padding: 2pt 5pt; color: #fff;
+  }
+  .badge-critical { background: #c91022; }
+  .badge-high     { background: #d97014; }
+  .badge-notable  { background: #1f6b8a; }
+  .badge-info     { background: #4a5161; }
+
+  /* ── Modules ── */
+  .module {
+    border: 1pt solid #d8d4c0; background: #fff;
+    padding: 10pt 12pt; margin-bottom: 10pt;
+    -pdf-keep-with-next: false;
+  }
+  .module .name {
+    font-family: "Times-Bold", serif; font-size: 16pt; color: #0c0e13;
+  }
+  .module .track {
+    font-family: "Courier", monospace; font-size: 7.5pt;
+    color: #a8862c; letter-spacing: 1.5pt; text-transform: uppercase;
+    border: 0.75pt solid #a8862c; padding: 1pt 4pt; margin-left: 6pt;
+  }
+  .module .conf {
+    font-family: "Courier", monospace; font-size: 8.5pt; color: #4a5161;
+  }
+  .module .purpose {
+    font-family: "Times-Italic", serif; font-style: italic;
+    font-size: 9.5pt; color: #6b6f78; margin: 2pt 0 8pt;
+  }
+  .module .summary {
+    font-size: 10.5pt; line-height: 1.45; color: #1a1d24;
+    margin: 0 0 8pt;
+  }
+
+  /* ── Tables ── */
+  table.atlas-table { width: 100%; border-collapse: collapse;
+                      margin: 4pt 0 8pt; font-size: 9pt;
+                      border: 0.75pt solid #d8d4c0; }
+  table.atlas-table th {
+    background: #fafaf7; color: #4a5161;
+    font-family: "Courier", monospace; font-size: 7.5pt;
+    letter-spacing: 1pt; text-transform: uppercase;
+    padding: 6pt 8pt; text-align: left;
+    border-bottom: 0.75pt solid #d8d4c0;
+  }
+  table.atlas-table td {
+    padding: 5pt 8pt; vertical-align: top;
+    border-bottom: 0.5pt solid #e5e1cc;
+  }
+  table.atlas-table .num { font-family: "Courier", monospace; text-align: right;
+                           font-size: 9pt; }
+  table.atlas-table .baseline td { color: #6b6f78; }
+  table.atlas-table .delta-up    { color: #d97014; font-weight: bold; }
+  table.atlas-table .delta-down  { color: #1f6b8a; font-weight: bold; }
+  table.atlas-table .delta-zero  { color: #6b6f78; }
+  table.atlas-table .url-cell    { font-family: "Courier", monospace;
+                                   font-size: 8pt; word-wrap: break-word; }
+  .verdict-critical { color: #c91022; font-weight: bold;
+                      font-family: "Courier", monospace; font-size: 8pt;
+                      letter-spacing: 1pt; text-transform: uppercase; }
+  .verdict-high     { color: #d97014; font-weight: bold;
+                      font-family: "Courier", monospace; font-size: 8pt;
+                      letter-spacing: 1pt; text-transform: uppercase; }
+  .verdict-notable  { color: #1f6b8a; font-weight: bold;
+                      font-family: "Courier", monospace; font-size: 8pt;
+                      letter-spacing: 1pt; text-transform: uppercase; }
+  .verdict-low      { color: #6b6f78;
+                      font-family: "Courier", monospace; font-size: 8pt;
+                      letter-spacing: 1pt; text-transform: uppercase; }
+
+  /* ── Chart frame ── */
+  .chart {
+    background: #fafaf7; border: 0.75pt solid #d8d4c0;
+    padding: 8pt 10pt; margin: 4pt 0 10pt;
+  }
+  .chart-title {
+    font-family: "Courier", monospace; font-size: 8pt;
+    color: #6b6f78; letter-spacing: 1pt; text-transform: uppercase;
+    margin-bottom: 4pt;
+  }
+
+  /* ── Composite ── */
+  table.composite { width: 100%; border-collapse: collapse;
+                    background: #fafaf7; border: 0.75pt solid #d8d4c0;
+                    margin: 4pt 0 8pt; }
+  table.composite .score-cell {
+    width: 90pt; text-align: center; vertical-align: middle;
+    padding: 8pt; border-right: 0.5pt solid #e5e1cc;
+  }
+  table.composite .score {
+    font-family: "Times-Bold", serif; font-size: 28pt;
+    color: #0c0e13; line-height: 1;
+  }
+  table.composite .score-label {
+    font-family: "Courier", monospace; font-size: 8pt;
+    letter-spacing: 1.5pt; text-transform: uppercase; margin-top: 4pt;
+  }
+  .label-momentum  { color: #1f6b8a; }
+  .label-distress  { color: #c91022; }
+  .label-neutral   { color: #6b6f78; }
+  table.composite .drivers-cell { padding: 8pt 10pt; vertical-align: top; }
+  table.composite .drivers-cell ul { margin: 0; padding-left: 14pt; }
+  table.composite .drivers-cell li { font-size: 10pt; color: #1a1d24;
+                                     margin-bottom: 2pt; }
+
+  /* ── Filing changes ── */
+  .filing-change {
+    border: 0.75pt solid #d8d4c0; background: #fafaf7;
+    padding: 8pt 10pt; margin-bottom: 8pt;
+  }
+  .filing-change .kind {
+    font-family: "Courier", monospace; font-size: 8pt;
+    color: #6b6f78; letter-spacing: 1.5pt; text-transform: uppercase;
+  }
+  .filing-change .headline {
+    font-family: "Times-Bold", serif; font-size: 12pt;
+    color: #0c0e13; margin: 3pt 0;
+  }
+  .filing-change .excerpt {
+    font-family: "Times-Italic", serif; font-style: italic;
+    font-size: 10pt; color: #2a2e38;
+    padding-left: 8pt; border-left: 1pt solid #d8d4c0;
+    margin: 4pt 0;
+  }
+  .filing-change .rationale {
+    font-size: 9.5pt; color: #4a5161;
+  }
+  .filing-change .materiality {
+    font-family: "Courier", monospace; font-size: 8pt;
+    letter-spacing: 1pt; text-transform: uppercase; font-weight: bold;
+    float: right;
+  }
+  .mat-5 { border-left: 3pt solid #c91022; }
+  .mat-4 { border-left: 3pt solid #d97014; }
+  .mat-3 { border-left: 3pt solid #1f6b8a; }
+  .mat-2 { border-left: 3pt solid #6b6f78; }
+  .mat-5 .materiality { color: #c91022; }
+  .mat-4 .materiality { color: #d97014; }
+  .mat-3 .materiality { color: #1f6b8a; }
+  .mat-2 .materiality { color: #6b6f78; }
+
+  /* ── Sources ── */
+  .sources {
+    font-size: 9pt; color: #4a5161;
+    border-top: 0.5pt solid #e5e1cc; padding-top: 6pt; margin-top: 8pt;
+  }
+  .sources .label {
+    font-family: "Courier", monospace; font-size: 7.5pt;
+    color: #6b6f78; letter-spacing: 1.2pt; text-transform: uppercase;
+  }
+  .src-tag {
+    font-family: "Courier", monospace; font-size: 7pt;
+    color: #6b6f78; border: 0.5pt solid #d8d4c0;
+    padding: 1pt 4pt;
+  }
+  a { color: #2e5da3; text-decoration: none; }
+
+  .caption {
+    font-family: "Courier", monospace; font-size: 7.5pt;
+    color: #6b6f78; letter-spacing: 1pt; text-transform: uppercase;
+    margin: 4pt 0 8pt;
+  }
+
+  .plan-trace {
+    font-family: "Times-Italic", serif; font-style: italic;
+    font-size: 10pt; color: #2a2e38;
+    padding: 8pt 12pt; background: #fafaf7;
+    border-left: 2pt solid #d8d4c0;
+  }
+  .plan-trace .label {
+    font-family: "Courier", monospace; font-style: normal;
+    font-size: 7.5pt; color: #6b6f78;
+    letter-spacing: 1.5pt; text-transform: uppercase;
+    display: block; margin-bottom: 3pt;
+  }
+
+  /* ── Footer ── */
+  #footer_content {
+    font-family: "Courier", monospace; font-size: 7pt;
+    color: #6b6f78; letter-spacing: 1pt; text-align: center;
+  }
+  #footer_content .bd { color: #a8862c; }
+</style>
+</head>
+<body>
+
+<div id="footer_content">
+  Atlas · Ground Truth Brief · <span class="bd">powered by Bright Data MCP</span>
+  &nbsp;·&nbsp; page <pdf:pagenumber> of <pdf:pagecount>
+</div>
+
+{# ── Masthead ───────────────────────────────────────────────── #}
+<table class="masthead" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td>
+      <span class="brand-mark">ATLAS</span>
+      &nbsp;&nbsp;<span class="doctype">Ground Truth Brief</span>
+    </td>
+    <td align="right">
+      <span class="id-chip">id · {{ brief.id }}</span>
+    </td>
+  </tr>
+</table>
+
+{# ── Cover ──────────────────────────────────────────────────── #}
+<h1 class="subject">{{ brief.subject }}</h1>
+<div class="question">&ldquo;{{ brief.question.text }}&rdquo;</div>
+
+<table class="meta">
+  <tr>
+    <td>
+      <div class="label">Generated</div>
+      <div class="value">{{ brief.generated_at.strftime('%Y-%m-%d %H:%M UTC') }}</div>
+    </td>
+    <td>
+      <div class="label">Subject</div>
+      <div class="value">{{ brief.subject }}</div>
+    </td>
+    <td>
+      <div class="label">Intent</div>
+      <div class="value">{{ brief.plan.intent|upper }}</div>
+    </td>
+    <td>
+      <div class="label">Confidence</div>
+      <div class="value {% if brief.confidence_score >= 0.75 %}value-accent{% endif %}">
+        {{ "%.2f"|format(brief.confidence_score) }} &middot; {{ brief.sections|length }} mod
+      </div>
+    </td>
+    <td style="border-right: 0;">
+      <div class="label">Mode</div>
+      <div class="value {% if brief.mode == 'live' %}value-live{% endif %}">{{ brief.mode|upper }}</div>
+    </td>
+  </tr>
+</table>
+
+{# ── Executive summary ──────────────────────────────────────── #}
+<h2 class="section">§ 01 &nbsp; Executive Summary</h2>
+<div class="executive">{{ brief.executive_summary }}</div>
+
+{# ── Key Findings ───────────────────────────────────────────── #}
+{% if brief.key_findings %}
+<h2 class="section">§ 02 &nbsp; Key Findings &nbsp; <span style="color:#6b6f78; letter-spacing: 1pt;">top {{ brief.key_findings|length }}</span></h2>
+{{ m.render_findings(brief.key_findings) }}
+{% endif %}
+
+{# ── Module Detail ─────────────────────────────────────────── #}
+<h2 class="section">§ 03 &nbsp; Module Detail &nbsp; <span style="color:#6b6f78; letter-spacing: 1pt;">{{ brief.sections|length }} module{% if brief.sections|length != 1 %}s{% endif %}</span></h2>
+
+{% for section in brief.sections %}
+  {% set meta = catalog[section.module] %}
+  <div class="module">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td>
+          <span class="name">{{ section.title }}</span>
+          <span class="track">{{ meta.track }}</span>
+        </td>
+        <td align="right" class="conf">
+          confidence <b>{{ "%.2f"|format(section.confidence) }}</b> &middot;
+          via {{ meta.bright_data_tools|join(' + ') }}
+        </td>
+      </tr>
+    </table>
+    <div class="purpose">{{ meta.purpose }}</div>
+    <p class="summary">{{ section.summary }}</p>
+
+    {% if section.module == 'trueprice' and section.data.regions %}
+      {{ m.render_price_table(section.data) }}
+      {% if specs.trueprice and specs.trueprice.delta_bars.bars %}
+        {{ m.render_price_chart(specs.trueprice.delta_bars) }}
+      {% endif %}
+    {% endif %}
+
+    {% if section.module == 'signal' and section.data.by_region %}
+      {{ m.render_signal_section(section.data, specs.signal or {}) }}
+    {% endif %}
+
+    {% if section.module == 'altdata' and section.data.composite_score is defined %}
+      {{ m.render_altdata(section.data, specs.altdata or {}) }}
+    {% endif %}
+
+    {% if section.module == 'filing' and section.data.filing_diff %}
+      {{ m.render_filing_changes(section.data) }}
+    {% endif %}
+
+    {% if section.module == 'visual' and section.data.suspects %}
+      {{ m.render_visual_table(section.data) }}
+    {% endif %}
+
+    {% if section.module == 'exposure' and section.data.exposure_scan %}
+      {{ m.render_exposure(section.data) }}
+    {% endif %}
+
+    {% if section.findings %}
+      <h4 class="sub">Findings ({{ section.findings|length }})</h4>
+      {{ m.render_findings(section.findings) }}
+    {% endif %}
+
+    {% if section.sources %}
+    <div class="sources">
+      <span class="label">Sources ({{ section.sources|length }})</span>&nbsp;
+      {% for s in section.sources %}
+        <a href="{{ s.url }}">{{ s.title }}</a> <span class="src-tag">{{ s.via }}</span>{% if not loop.last %} &middot; {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+{% endfor %}
+
+{# ── Plan Trace ─────────────────────────────────────────────── #}
+<h2 class="section">§ 04 &nbsp; Plan Trace</h2>
+<div class="plan-trace">
+  <span class="label">Planner reasoning</span>
+  {{ brief.plan.reasoning }}
+</div>
+
+</body>
+</html>

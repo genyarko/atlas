@@ -1,0 +1,29 @@
+# AcmeCorp CI bootstrap notes — paste #9182734
+# pasted: 2026-05-08 19:14 UTC
+# anonymous
+
+# scratchpad for the new staging cluster — don't lose this again
+
+export ACMECORP_DOMAIN=acmecorp-demo.test
+export ACMECORP_API_BASE=https://api.acmecorp-demo.test/v2
+
+# staging service account (rotated 2026-05-01, still valid)
+ACMECORP_DB_HOST=db-staging.acmecorp-demo.test
+ACMECORP_DB_USER=ci-bootstrap
+ACMECORP_DB_PASSWORD=Hunter2-staging-bootstrap-2026
+
+# build runner token — old format, needs rotation
+ACMECORP_CI_TOKEN=acmecorp_pat_live_4f9c8e1a2b3d5f6e7a8b9c0d1e2f3a4b
+ACMECORP_DEPLOY_KEY=acmecorp_deploy_5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d
+
+# slack webhook for the deploy channel — left in env file by mistake
+ACMECORP_SLACK_WEBHOOK=https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXX
+
+# notes:
+# - rotate the CI token before the next prod cut (calendar reminder set)
+# - move the deploy key into the vault, this paste is just scratch
+# - smoke test against api.acmecorp-demo.test/v2/healthz once secrets reload
+
+# everything below this line is controlled demo material.
+# the values above are deliberately fake-shaped for the Atlas Exposure
+# module's controlled-target demo (see demo/exposure/README.md).
